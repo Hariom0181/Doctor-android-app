@@ -139,7 +139,7 @@ export default function ActivePatientsCard({ onViewAll }) {
                                 <Text style={styles.patientName} numberOfLines={1}>
                                   {item.firstName}
                                 </Text>
-                                <Text style={styles.patientAge}>{item.age} yrs</Text>
+                                {/* <Text style={styles.patientAge}>{item.age} yrs</Text> */} 
                               </TouchableOpacity>
                             </View>
                           )}

@@ -27,6 +27,7 @@ export default function DoctorDashboard({ navigation }) {
 
     useEffect(() => {
         loadDoctorData();
+        console.log(doctor);
     }, []);
 
     const loadDoctorData = async () => {
@@ -63,6 +64,7 @@ export default function DoctorDashboard({ navigation }) {
             console.error(error);
         }
     };
+
     const calculateAge = (dateOfBirth) => {
         if (!dateOfBirth) return null;
         const today = new Date();
@@ -75,6 +77,7 @@ export default function DoctorDashboard({ navigation }) {
         }
         return age;
     };
+
 
     const handleLogout = async () => {
         await authService.logout();
@@ -310,34 +313,34 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         elevation: 3,
         marginBottom: 15,
-      },
-      buttonContent: {
+    },
+    buttonContent: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
         gap: 12,
-      },
-      buttonIcon: {
+    },
+    buttonIcon: {
         fontSize: 28,
-      },
-      buttonTextContainer: {
+    },
+    buttonTextContainer: {
         flex: 1,
-      },
-      buttonMainText: {
+    },
+    buttonMainText: {
         fontSize: 15,
         fontWeight: '700',
         color: '#1a1a1a',
-      },
-      buttonSubText: {
+    },
+    buttonSubText: {
         fontSize: 12,
         color: '#666',
         marginTop: 2,
-      },
-      buttonArrow: {
+    },
+    buttonArrow: {
         fontSize: 18,
         color: '#007AFF',
         fontWeight: '700',
-      },
+    },
     modalContainer: {
         flex: 1,
         backgroundColor: '#f5f5f5',

@@ -23,6 +23,7 @@ axiosInstance.interceptors.request.use(
 
 export const authService = {
   login: async (email, password, role) => {
+
     const endpoint = role === 'doctor' 
       ? '/doctors/login'
       : role === 'nurse'
@@ -31,7 +32,7 @@ export const authService = {
 
     try {
       const response = await axiosInstance.post(endpoint, { email, password });
-      
+      console.log("PATIENT LOGIN RESPONSE:", response.data);      
       if (response.data.success) {
         const userData = role === 'doctor' ? response.data.doctor : response.data.patient;
         

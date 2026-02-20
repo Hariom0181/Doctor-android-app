@@ -10,25 +10,25 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use(
-    async (config) => {
-      const token = await AsyncStorage.getItem('token');
-      console.log('Token being sent:', token?.substring(0, 20) + '...');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    },
-    (error) => Promise.reject(error)
-  );
+  async (config) => {
+    const token = await AsyncStorage.getItem('token');
+    // console.log('Token being sent:', token?.substring(0, 20) + '...');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 export const doctorService = {
-    getLinkedPatients: async () => {
-        try {
-          const response = await axiosInstance.get('/doctors/linked-patients');
-          return { success: true, data: response.data.data };
-        } catch (error) {
-          return { success: false, error: error.response?.data?.message };
-        }
-      },
+  getLinkedPatients: async () => {
+    try {
+      const response = await axiosInstance.get('/doctors/linked-patients');
+      return { success: true, data: response.data.data };
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message };
+    }
+  },
 
   requestMetric: async (patientId, metricType, deviceId) => {
     try {
@@ -49,6 +49,22 @@ export const doctorService = {
       return { success: true, data: response.data };
     } catch (error) {
       return { success: false, error: 'No reading found' };
+    }
+  },
+  getProfileImageById: async (doctorId) => {
+    try {
+      const response = await axiosInstance.get(
+        `/doctors/profile-image/${doctorId}`
+      );
+
+      if (response.data.success) {
+        return response.data.profileImagePath;
+      }
+
+      return null;
+    } catch (error) {
+      console.log("Image API Error:", error.response?.data);
+      return null;
     }
   },
 };

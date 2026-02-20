@@ -51,4 +51,12 @@ export const patientService = {
         throw error;
       }
     },
+    getLinkedDoctors: async () => {
+      try {
+        const response = await axiosInstance.get('/patients/linked-doctors');
+        return response.data;
+      } catch (error) {
+        return { success: false };
+      }
+    },
   };

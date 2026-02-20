@@ -7,9 +7,16 @@ export default function LoginScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (email, password, role) => {
+    console.log("HANDLE LOGIN CALLED", email, role); 
     setLoading(true);
     try {
       const result = await authService.login(email, password, role);
+      const endpoint = role === 'doctor' 
+    ? '/doctors/login'
+    : role === 'nurse'
+    ? '/nurses/login'
+    : '/patients/login';
+    console.log("ENDPOINT:", endpoint);
 
       if (result.success) {
         navigation.reset({
