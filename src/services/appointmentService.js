@@ -1,7 +1,10 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// require('dotenv').config();
+// or if using ES modules: import * as dotenv from 'dotenv'; dotenv.config();
 
-const IP = '192.168.1.103';
+
+const IP = '192.168.137.1';
 const API_BASE_URL = `http://${IP}:5000/api`;
 
 const axiosInstance = axios.create({

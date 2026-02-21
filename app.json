@@ -12,12 +12,20 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.hariom.vitaltrack",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png"
       }
     },
     "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#007AFF"
+        }
+      ],
       [
         "expo-splash-screen",
         {
@@ -27,6 +35,12 @@
           "backgroundColor": "#ffffff"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "dfd2b054-16f5-443f-983f-90b53c5c9575"
+      }
+    },
+    "owner": "hariom018"
   }
 }

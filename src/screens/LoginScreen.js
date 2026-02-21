@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoginForm from '../components/LoginForm';
 import { authService } from '../services/authService';
 
@@ -12,13 +13,17 @@ export default function LoginScreen({ navigation }) {
     try {
       const result = await authService.login(email, password, role);
       const endpoint = role === 'doctor' 
-    ? '/doctors/login'
-    : role === 'nurse'
-    ? '/nurses/login'
-    : '/patients/login';
-    console.log("ENDPOINT:", endpoint);
+        ? '/doctors/login'
+        : role === 'nurse'
+        ? '/nurses/login'
+        : '/patients/login';
+      console.log("ENDPOINT:", endpoint);
 
       if (result.success) {
+        // Save userType
+        await AsyncStorage.setItem('userType', role);
+        console.log('✅ UserType saved:', role);
+        
         navigation.reset({
           index: 0,
           routes: [{ name: `${role}-dashboard` }],

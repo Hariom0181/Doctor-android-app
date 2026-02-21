@@ -13,9 +13,11 @@ import {
   ActivityIndicator,
   FlatList,
   ScrollView,
+  Alert,
 } from 'react-native';
 import ProfileCard from '../components/patientComponents/patient_ProfileCard';
 import MyDoctor from '../components/patientComponents/myDoctor';
+import { sendTestNotification } from '../services/notificationTestService';
 
 export default function PatientDashboard({ navigation }) {
 
@@ -44,6 +46,22 @@ export default function PatientDashboard({ navigation }) {
     const imageUrl = await patientService.getProfileImage(patient.id);
     setProfileImage(imageUrl);
   };
+
+  const handleSendTestNotification = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const result = await sendTestNotification(token, 'patient');
+
+      if (result.success) {
+        Alert.alert('✅ Success', 'Test notification sent!');
+        console.log('Response:', result);
+      }
+    } catch (error) {
+      Alert.alert('❌ Error', error.message);
+      console.error('Error:', error);
+    }
+  };
+
 
   const handleLogout = async () => {
     await authService.logout();
@@ -79,6 +97,14 @@ export default function PatientDashboard({ navigation }) {
             <MyDoctor />
           </>
         )}
+
+        <TouchableOpacity
+          style={styles.testButton}
+          onPress={handleSendTestNotification}
+        >
+          <Text style={styles.testButtonText}>📢 Send Test Notification</Text>
+        </TouchableOpacity>
+
 
       </ScrollView>
 
@@ -197,5 +223,16 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: 'rgba(255,255,255,0.8)',
     fontWeight: '500',
+  },
+  testButton: {
+    backgroundColor: '#007AFF',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    margin: 15,
+  },
+  testButtonText: {
+    color: '#fff',
+    fontWeight: '600',
   },
 });

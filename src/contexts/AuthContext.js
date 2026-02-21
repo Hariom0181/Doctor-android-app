@@ -16,10 +16,18 @@ export const AuthProvider = ({ children }) => {
     try {
       const token = await AsyncStorage.getItem('token');
       const userData = await AsyncStorage.getItem('userData');
-      
+      const parsedUser = JSON.parse(userData);
+      console.log('User data:', parsedUser);
+      console.log('User role:', parsedUser.role);
+
       if (token && userData) {
-        setUser(JSON.parse(userData));
-        setRole(JSON.parse(userData).role);
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+        setRole(parsedUser.role);
+
+        // Determine userType from userData
+        const userType = parsedUser.role === 'doctor' ? 'doctor' : 'patient';
+        await AsyncStorage.setItem('userType', userType);
       }
     } catch (e) {
       console.error('Error restoring token:', e);
@@ -31,6 +39,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     await AsyncStorage.removeItem('token');
     await AsyncStorage.removeItem('userData');
+    await AsyncStorage.removeItem('userType');
     setUser(null);
     setRole(null);
   };
