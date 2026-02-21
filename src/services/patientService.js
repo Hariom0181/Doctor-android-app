@@ -1,8 +1,9 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const IP = '192.168.1.103';
+const IP = "192.168.1.107";
 const API_BASE_URL = `http://${IP}:5000/api`;
+
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -57,6 +58,34 @@ export const patientService = {
         return response.data;
       } catch (error) {
         return { success: false };
+      }
+    },
+
+    getPatientPrescriptions: async (patientId, status = null) => {
+      try {
+        let endpoint = `${API_BASE_URL}/prescriptions/patient/${patientId}`;
+        
+        if (status) {
+          endpoint += `?status=${status}`;
+        }
+    
+        const response = await axiosInstance.get(endpoint);
+        return response.data.data || [];
+      } catch (error) {
+        console.error('Error fetching prescriptions:', error);
+        throw error;
+      }
+    },
+
+    getNextCheckup: async (patientId) => {
+      try {
+        const response = await axiosInstance.get(
+          `${API_BASE_URL}/patients/${patientId}/next-checkup`
+        );
+        return response.data.data;
+      } catch (error) {
+        console.error('Error fetching next checkup:', error);
+        return null;
       }
     },
   };

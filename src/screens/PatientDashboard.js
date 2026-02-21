@@ -3,25 +3,24 @@ import { authService } from '../services/authService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { patientService } from '../services/patientService';
 import { useState, useEffect } from 'react';
+import MyMedications from '../components/patientComponents/myMedication';
+import NextCheckup from '../components/patientComponents/nextCheckup';
+
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
-  Image,
-  Modal,
-  ActivityIndicator,
-  FlatList,
   ScrollView,
+  RefreshControl,
 } from 'react-native';
 import ProfileCard from '../components/patientComponents/patient_ProfileCard';
 import MyDoctor from '../components/patientComponents/myDoctor';
 
 export default function PatientDashboard({ navigation }) {
-
   const [profileImage, setProfileImage] = useState(null);
   const [patient, setPatient] = useState(null);
-
+  const [refreshing, setRefreshing] = useState(false);
 
   const loadPatientData = async () => {
     const userData = await AsyncStorage.getItem('userData');
@@ -43,6 +42,20 @@ export default function PatientDashboard({ navigation }) {
   const loadProfileImage = async () => {
     const imageUrl = await patientService.getProfileImage(patient.id);
     setProfileImage(imageUrl);
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await loadPatientData();
+      if (patient?.id) {
+        await loadProfileImage();
+      }
+    } catch (error) {
+      console.error('Error refreshing:', error);
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -67,119 +80,37 @@ export default function PatientDashboard({ navigation }) {
           <Text style={styles.logoutText}>Logout</Text>
         </View>
       </View>
+
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#007AFF']}
+          />
+        }
       >
-        {/* here the patients-dashboard cards will come */}
         {patient && (
           <>
             <ProfileCard patient={patient} profileImage={profileImage} />
             <MyDoctor />
+            <NextCheckup patientId={patient?.id} />
+            <MyMedications patientId={patient?.id} />
           </>
         )}
-
       </ScrollView>
-
-
-
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 15,
-    gap: 12,
-  },
-  buttonIcon: {
-    fontSize: 28,
-  },
-  buttonTextContainer: {
-    flex: 1,
-  },
-  buttonMainText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#1a1a1a',
-  },
-  buttonSubText: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 2,
-  },
-  buttonArrow: {
-    fontSize: 18,
-    color: '#007AFF',
-    fontWeight: '700',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 15,
-    paddingTop: 15,
-    paddingBottom: 20,
-  },
-  logoutIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logoutIconText: {
-    fontSize: 20,
-  },
-  logoutSection: {
-    alignItems: 'center',
-    gap: 4,
-  },
-  logoutText: {
-    color: '#fff',
-    fontSize: 11,
-    fontWeight: '600',
-  },
-  patientName: {
-    fontSize: 18,
-    color: '#fff',
-    fontWeight: '700',
-    marginTop: 2,
-  },
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
     paddingTop: 30,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 30,
-  },
-  button: {
-    backgroundColor: '#FF3B30',
-    padding: 15,
-    borderRadius: 8,
-    width: 200,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
   },
   header: {
     backgroundColor: '#007AFF',
@@ -197,5 +128,39 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: 'rgba(255,255,255,0.8)',
     fontWeight: '500',
+  },
+  patientName: {
+    fontSize: 18,
+    color: '#fff',
+    fontWeight: '700',
+    marginTop: 2,
+  },
+  logoutSection: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  logoutIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoutIconText: {
+    fontSize: 20,
+  },
+  logoutText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 15,
+    paddingTop: 15,
+    paddingBottom: 20,
   },
 });

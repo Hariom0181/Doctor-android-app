@@ -17,6 +17,7 @@ export default function LoginForm({ onSubmit, loading }) {
   const handleSubmit = () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please fill all fields');
+      console.log(process.env.EXPO_PUBLIC_API_IP);
       return;
     }
     onSubmit(email, password, role);

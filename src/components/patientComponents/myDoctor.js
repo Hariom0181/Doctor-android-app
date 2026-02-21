@@ -18,7 +18,7 @@ export default function MyDoctor({ onViewAll }) {
 
     useEffect(() => {
         fetchLinkedDoctor();
-        console.log("Doctor Image URL:", doctorImage);
+        // console.log("Doctor Image URL:", doctorImage);
     }, []);
 
     const fetchLinkedDoctor = async () => {

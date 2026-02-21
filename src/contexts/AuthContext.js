@@ -16,10 +16,11 @@ export const AuthProvider = ({ children }) => {
     try {
       const token = await AsyncStorage.getItem('token');
       const userData = await AsyncStorage.getItem('userData');
+      const userType = await AsyncStorage.getItem('userType'); // Get from here
       
       if (token && userData) {
         setUser(JSON.parse(userData));
-        setRole(JSON.parse(userData).role);
+        setRole(userType); // Use userType instead
       }
     } catch (e) {
       console.error('Error restoring token:', e);
