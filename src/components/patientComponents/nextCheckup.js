@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
   ActivityIndicator,
   RefreshControl,
   ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import { patientService } from '../../services/patientService';
 
@@ -125,16 +125,16 @@ export default function NextCheckup({ patientId }) {
           </View>
 
           {/* Divider */}
-          <View style={styles.divider} />
+          {/* <View style={styles.divider} /> */}
 
           {/* Doctor Info - Simple */}
-          <View style={styles.doctorSimpleSection}>
+          {/* <View style={styles.doctorSimpleSection}>
             <Text style={styles.doctorLabel}>👨‍⚕️ Doctor</Text>
             <Text style={styles.doctorNameOnly}>{checkup.doctorName}</Text>
             {checkup.specialization && (
               <Text style={styles.doctorSpec}>{checkup.specialization}</Text>
             )}
-          </View>
+          </View> */}
         </View>
       </View>
     </ScrollView>

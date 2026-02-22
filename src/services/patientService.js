@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const IP = "192.168.1.107";
+const IP = process.env.EXPO_PUBLIC_API_IP;
 const API_BASE_URL = `http://${IP}:5000/api`;
 
 
@@ -20,9 +20,9 @@ axiosInstance.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
-
+//  --------------------------------------------------------------
 export const patientService = {
-    getProfileImage: async (patientId) => {
+    getProfileImage: async (patientId) => { 
       try {
         const response = await axiosInstance.get(`/patients/${patientId}/profile-image`);
         
