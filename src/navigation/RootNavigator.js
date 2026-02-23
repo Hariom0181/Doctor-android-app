@@ -1,12 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import LoginScreen from '../screens/LoginScreen';
-import PatientDashboard from '../screens/PatientDashboard';
-import DoctorDashboard from '../screens/DoctorDashboard';
-import NurseDashboard from '../screens/NurseDashboard';
+import { useEffect, useState } from 'react';
 import AppointmentsScreen from '../screens/AppointmentsScreen';
+import DoctorDashboard from '../screens/DoctorDashboard';
+import LoginScreen from '../screens/LoginScreen';
+import AllMedicationsScreen from '../screens/AllMedicationsScreen';
+import NurseDashboard from '../screens/NurseDashboard';
+import PatientDashboard from '../screens/PatientDashboard';
 
 
 const Stack = createNativeStackNavigator();
@@ -47,6 +48,11 @@ export default function RootNavigator() {
         initialRouteName={initialRoute}
         screenOptions={{ headerShown: false }}
       >
+        <Stack.Screen
+          name="AllMedications"
+          component={AllMedicationsScreen}
+          options={{ title: 'All Medications' }}
+        />
         <Stack.Screen name="login" component={LoginScreen} />
         <Stack.Screen name="patient-dashboard" component={PatientDashboard} />
         <Stack.Screen name="doctor-dashboard" component={DoctorDashboard} />
