@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { appointmentService } from '../services/appointmentService';
+// Added professional icons
+import { MaterialCommunityIcons, Ionicons, FontAwesome5 } from '@expo/vector-icons';
 
 export default function AppointmentsScreen({ navigation, route }) {
     const doctorId = route.params?.doctorId;
@@ -144,10 +146,10 @@ export default function AppointmentsScreen({ navigation, route }) {
                         style={styles.backButton}
                         onPress={() => navigation.goBack()}
                     >
-                        <Text style={styles.backText}>← Back</Text>
+                        <Ionicons name="arrow-back" size={24} color="#fff" />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>All Appointments</Text>
-                    <View style={{ width: 60 }} />
+                    <View style={{ width: 44 }} />
                 </View>
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color="#007AFF" />
@@ -164,10 +166,10 @@ export default function AppointmentsScreen({ navigation, route }) {
                     style={styles.backButton}
                     onPress={() => navigation.goBack()}
                 >
-                    <Text style={styles.backText}>← Back</Text>
+                    <Ionicons name="arrow-back" size={24} color="#fff" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>All Appointments</Text>
-                <View style={{ width: 60 }} />
+                <View style={{ width: 44 }} />
             </View>
 
             {/* MAIN CONTENT */}
@@ -182,10 +184,10 @@ export default function AppointmentsScreen({ navigation, route }) {
                     <>
                         {/* STATS SECTION */}
                         <View style={styles.statsSection}>
-                            <StatBox value={stats.completed} label="Completed" color="#10b981" />
-                            <StatBox value={stats.cancelled} label="Cancelled" color="#ef4444" />
-                            <StatBox value={stats.pending} label="Pending" color="#f59e0b" />
-                            <StatBox value={stats.confirmed} label="Confirmed" color="#3b82f6" />
+                            <StatBox value={stats.completed} label="Completed" color="#10b981" icon="check-circle" />
+                            <StatBox value={stats.cancelled} label="Cancelled" color="#ef4444" icon="close-circle" />
+                            <StatBox value={stats.pending} label="Pending" color="#f59e0b" icon="clock-outline" />
+                            <StatBox value={stats.confirmed} label="Confirmed" color="#3b82f6" icon="calendar-check" />
                         </View>
 
                         {/* STATUS FILTER */}
@@ -226,16 +228,18 @@ export default function AppointmentsScreen({ navigation, route }) {
                                 activeOpacity={0.8}
                             >
                                 <View style={styles.calendarButtonContent}>
-                                    <Text style={styles.calendarButtonIcon}>📆</Text>
+                                    <MaterialCommunityIcons name="calendar-month" size={24} color="#007AFF" />
                                     <View style={styles.calendarButtonTextContainer}>
                                         <Text style={styles.calendarButtonLabel}>Select Date</Text>
                                         <Text style={styles.calendarButtonValue}>
                                             {selectedDate ? formatDate(selectedDate) : 'All Appointments'}
                                         </Text>
                                     </View>
-                                    <Text style={styles.calendarDropdownIcon}>
-                                        {showCalendar ? '▲' : '▼'}
-                                    </Text>
+                                    <Ionicons 
+                                        name={showCalendar ? "chevron-up" : "chevron-down"} 
+                                        size={20} 
+                                        color="#007AFF" 
+                                    />
                                 </View>
                             </TouchableOpacity>
 
@@ -273,7 +277,7 @@ export default function AppointmentsScreen({ navigation, route }) {
                                     onPress={() => setSelectedDate(null)}
                                     activeOpacity={0.8}
                                 >
-                                    <Text style={styles.clearButtonIcon}>✕</Text>
+                                    <MaterialCommunityIcons name="close-circle-outline" size={18} color="#ef4444" />
                                     <Text style={styles.clearButtonText}>Clear Date Filter</Text>
                                 </TouchableOpacity>
                             )}
@@ -281,8 +285,9 @@ export default function AppointmentsScreen({ navigation, route }) {
 
                         {/* RESULT COUNT */}
                         <View style={styles.resultSection}>
+                             <MaterialCommunityIcons name="text-box-search-outline" size={18} color="#007AFF" style={{marginRight: 6}} />
                             <Text style={styles.resultText}>
-                                📍 {appointments.length} appointment{appointments.length !== 1 ? 's' : ''} found
+                                {appointments.length} appointment{appointments.length !== 1 ? 's' : ''} found
                             </Text>
                         </View>
                     </>
@@ -291,13 +296,16 @@ export default function AppointmentsScreen({ navigation, route }) {
                     <View style={styles.appointmentCard}>
                         <View style={styles.cardHeader}>
                             <View>
-                                <Text style={styles.cardTime}>🕒 {formatTime(item.appointment_time)}</Text>
+                                <View style={styles.timeRow}>
+                                    <MaterialCommunityIcons name="clock-outline" size={16} color="#007AFF" />
+                                    <Text style={styles.cardTime}>{formatTime(item.appointment_time)}</Text>
+                                </View>
                                 <Text style={styles.cardDate}>{formatDate(item.appointment_date)}</Text>
                             </View>
                             <View
                                 style={[
                                     styles.statusBadge,
-                                    { backgroundColor: getStatusColor(item.status) + '20' }
+                                    { backgroundColor: getStatusColor(item.status) + '15' }
                                 ]}
                             >
                                 <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
@@ -307,8 +315,14 @@ export default function AppointmentsScreen({ navigation, route }) {
                         </View>
                         <View style={styles.cardDivider} />
                         <View style={styles.cardBody}>
-                            <Text style={styles.patientName}>👤 {item.patient_name}</Text>
-                            <Text style={styles.appointmentType}>📋 {item.appointment_type}</Text>
+                            <View style={styles.infoRow}>
+                                <FontAwesome5 name="user-circle" size={14} color="#64748B" style={styles.rowIcon} />
+                                <Text style={styles.patientName}>{item.patient_name}</Text>
+                            </View>
+                            <View style={styles.infoRow}>
+                                <MaterialCommunityIcons name="clipboard-text-outline" size={16} color="#64748B" style={styles.rowIcon} />
+                                <Text style={styles.appointmentType}>{item.appointment_type}</Text>
+                            </View>
 
                             {item.reason && (
                                 <View style={styles.reasonBox}>
@@ -321,7 +335,7 @@ export default function AppointmentsScreen({ navigation, route }) {
                 )}
                 ListEmptyComponent={
                     <View style={styles.emptyContainer}>
-                        <Text style={styles.emptyIcon}>📭</Text>
+                        <MaterialCommunityIcons name="calendar-blank" size={64} color="#CBD5E1" />
                         <Text style={styles.emptyText}>No appointments found</Text>
                         <Text style={styles.emptySubtext}>
                             Try adjusting your filters or date selection
@@ -333,8 +347,9 @@ export default function AppointmentsScreen({ navigation, route }) {
     );
 }
 
-const StatBox = ({ value, label, color }) => (
+const StatBox = ({ value, label, color, icon }) => (
     <View style={styles.statBox}>
+        <MaterialCommunityIcons name={icon} size={20} color={color} />
         <Text style={[styles.statValue, { color }]}>{value}</Text>
         <Text style={styles.statLabel}>{label}</Text>
     </View>
@@ -343,36 +358,36 @@ const StatBox = ({ value, label, color }) => (
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#F8F9FB',
     },
     header: {
         backgroundColor: '#007AFF',
         paddingHorizontal: 15,
         paddingTop: 50,
-        paddingBottom: 15,
+        paddingBottom: 20,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+        elevation: 4,
     },
     backButton: {
-        paddingVertical: 8,
-        paddingHorizontal: 10,
-    },
-    backText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: '600',
+        width: 44,
+        height: 44,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     headerTitle: {
         color: '#fff',
         fontSize: 18,
-        fontWeight: '700',
+        fontWeight: '800',
         flex: 1,
         textAlign: 'center',
     },
     content: {
-        padding: 15,
-        paddingBottom: 20,
+        padding: 16,
+        paddingBottom: 30,
     },
     loadingContainer: {
         flex: 1,
@@ -383,48 +398,54 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         backgroundColor: '#fff',
-        borderRadius: 8,
-        padding: 12,
-        marginBottom: 15,
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 16,
         elevation: 2,
+        shadowColor: '#000',
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
     },
     statBox: {
         alignItems: 'center',
     },
     statValue: {
-        fontSize: 20,
-        fontWeight: '700',
+        fontSize: 18,
+        fontWeight: '800',
+        marginTop: 4,
     },
     statLabel: {
-        fontSize: 11,
-        color: '#666',
-        marginTop: 4,
+        fontSize: 10,
+        color: '#64748B',
+        marginTop: 2,
+        fontWeight: '600',
+        textTransform: 'uppercase',
     },
     filterSection: {
         backgroundColor: '#fff',
-        borderRadius: 8,
-        padding: 12,
-        marginBottom: 15,
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 16,
         elevation: 2,
     },
     filterLabel: {
-        fontSize: 12,
-        fontWeight: '600',
-        color: '#333',
-        marginBottom: 10,
+        fontSize: 13,
+        fontWeight: '700',
+        color: '#1E293B',
+        marginBottom: 12,
     },
     filterScroll: {
         marginHorizontal: -12,
         paddingHorizontal: 12,
     },
     filterButton: {
-        paddingHorizontal: 12,
+        paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: '#e5e7eb',
+        borderColor: '#E2E8F0',
         marginRight: 8,
-        backgroundColor: '#fff',
+        backgroundColor: '#F8FAFC',
     },
     filterButtonActive: {
         backgroundColor: '#007AFF',
@@ -432,179 +453,187 @@ const styles = StyleSheet.create({
     },
     filterButtonText: {
         fontSize: 12,
-        fontWeight: '600',
-        color: '#666',
+        fontWeight: '700',
+        color: '#64748B',
     },
     filterButtonTextActive: {
         color: '#fff',
     },
     calendarSection: {
         backgroundColor: '#fff',
-        borderRadius: 8,
-        padding: 12,
-        marginBottom: 15,
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 16,
         elevation: 2,
     },
     calendarContainer: {
         backgroundColor: '#fff',
-        borderRadius: 8,
+        borderRadius: 12,
         overflow: 'hidden',
         marginBottom: 8,
+        borderWidth: 1,
+        borderColor: '#F1F5F9',
     },
-   
     calendarButton: {
-        borderWidth: 2,
-        borderColor: '#e5e7eb',
-        borderRadius: 10,
-        padding: 12,
-        backgroundColor: '#f9fafb',
+        borderWidth: 1.5,
+        borderColor: '#E2E8F0',
+        borderRadius: 12,
+        padding: 14,
+        backgroundColor: '#F8FAFC',
         marginBottom: 8,
       },
       calendarButtonContent: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 10,
-      },
-      calendarButtonIcon: {
-        fontSize: 24,
       },
       calendarButtonTextContainer: {
         flex: 1,
+        marginLeft: 12,
       },
       calendarButtonLabel: {
-        fontSize: 11,
-        color: '#666',
-        fontWeight: '600',
+        fontSize: 10,
+        color: '#64748B',
+        fontWeight: '700',
+        textTransform: 'uppercase',
       },
       calendarButtonValue: {
         fontSize: 14,
-        color: '#1a1a1a',
-        fontWeight: '700',
-        marginTop: 2,
-      },
-      calendarDropdownIcon: {
-        fontSize: 14,
-        color: '#007AFF',
-        fontWeight: '700',
+        color: '#1E293B',
+        fontWeight: '800',
+        marginTop: 1,
       },
       clearButton: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        borderWidth: 1,
-        borderColor: '#ef4444',
+        backgroundColor: '#FEF2F2',
         borderRadius: 8,
         paddingVertical: 10,
-        paddingHorizontal: 12,
+        marginTop: 4,
         gap: 6,
-      },
-      clearButtonIcon: {
-        fontSize: 16,
-        color: '#ef4444',
-        fontWeight: '700',
       },
       clearButtonText: {
         fontSize: 12,
         color: '#ef4444',
-        fontWeight: '600',
+        fontWeight: '700',
       },
     resultSection: {
-        backgroundColor: '#f0f9ff',
-        borderRadius: 8,
-        padding: 10,
-        borderLeftWidth: 4,
-        borderLeftColor: '#007AFF',
-        marginBottom: 15,
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F0F7FF',
+        borderRadius: 10,
+        padding: 12,
+        marginBottom: 16,
     },
     resultText: {
         fontSize: 13,
-        fontWeight: '600',
+        fontWeight: '700',
         color: '#007AFF',
     },
     appointmentCard: {
         backgroundColor: '#fff',
-        borderRadius: 8,
+        borderRadius: 16,
         marginBottom: 12,
-        elevation: 2,
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
         overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: '#F1F5F9',
     },
     cardHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        padding: 12,
+        padding: 16,
+    },
+    timeRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 4,
     },
     cardTime: {
-        fontSize: 14,
-        fontWeight: '700',
+        fontSize: 15,
+        fontWeight: '800',
         color: '#007AFF',
-        marginBottom: 4,
+        marginLeft: 4,
     },
     cardDate: {
         fontSize: 12,
-        color: '#666',
+        color: '#64748B',
+        fontWeight: '500',
     },
     statusBadge: {
         paddingHorizontal: 10,
         paddingVertical: 6,
-        borderRadius: 6,
+        borderRadius: 8,
     },
     statusText: {
-        fontSize: 11,
-        fontWeight: '700',
+        fontSize: 10,
+        fontWeight: '800',
     },
     cardDivider: {
         height: 1,
-        backgroundColor: '#e5e7eb',
+        backgroundColor: '#F1F5F9',
     },
     cardBody: {
-        padding: 12,
+        padding: 16,
+    },
+    infoRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    rowIcon: {
+        width: 20,
     },
     patientName: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#1a1a1a',
-        marginBottom: 6,
+        fontSize: 15,
+        fontWeight: '700',
+        color: '#1E293B',
+        marginLeft: 8,
     },
     appointmentType: {
         fontSize: 13,
-        color: '#666',
-        marginBottom: 8,
+        color: '#64748B',
+        marginLeft: 8,
+        fontWeight: '500',
     },
     reasonBox: {
-        backgroundColor: '#f9fafb',
-        borderRadius: 6,
-        padding: 8,
-        borderLeftWidth: 3,
-        borderLeftColor: '#f59e0b',
+        backgroundColor: '#FFFBEB',
+        borderRadius: 10,
+        padding: 12,
+        marginTop: 8,
+        borderLeftWidth: 4,
+        borderLeftColor: '#F59E0B',
     },
     reasonLabel: {
         fontSize: 11,
-        fontWeight: '600',
-        color: '#92400e',
+        fontWeight: '800',
+        color: '#92400E',
+        textTransform: 'uppercase',
     },
     reasonText: {
-        fontSize: 12,
-        color: '#78350f',
+        fontSize: 13,
+        color: '#78350F',
         marginTop: 4,
+        lineHeight: 18,
     },
     emptyContainer: {
         alignItems: 'center',
-        paddingVertical: 60,
-    },
-    emptyIcon: {
-        fontSize: 48,
-        marginBottom: 12,
+        paddingVertical: 80,
     },
     emptyText: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#1a1a1a',
-        marginBottom: 4,
+        fontSize: 18,
+        fontWeight: '800',
+        color: '#1E293B',
+        marginTop: 16,
     },
     emptySubtext: {
-        fontSize: 13,
-        color: '#999',
+        fontSize: 14,
+        color: '#64748B',
         textAlign: 'center',
+        marginTop: 8,
     },
 });

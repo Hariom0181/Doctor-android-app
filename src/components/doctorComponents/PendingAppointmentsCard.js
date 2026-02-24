@@ -9,6 +9,8 @@ import {
   Alert,
 } from 'react-native';
 import { appointmentService } from '../../services/appointmentService';
+// Professional Icon Sets
+import { MaterialCommunityIcons, Ionicons, Feather } from '@expo/vector-icons';
 
 export default function PendingAppointmentsCard({ doctorId }) {
   const [pendingAppointments, setPendingAppointments] = useState([]);
@@ -131,7 +133,7 @@ export default function PendingAppointmentsCard({ doctorId }) {
 
   if (loading) {
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, styles.loadingCenter]}>
         <ActivityIndicator size="large" color="#007AFF" />
       </View>
     );
@@ -140,24 +142,29 @@ export default function PendingAppointmentsCard({ doctorId }) {
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Text style={styles.title}>Pending Requests</Text>
+        <View style={styles.titleContainer}>
+            {/* Added Professional Header Icon */}
+            <MaterialCommunityIcons name="clock-alert-outline" size={22} color="#F59E0B" />
+            <Text style={styles.title}>Pending Requests</Text>
+            {pendingAppointments.length > 0 && (
+                <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{pendingAppointments.length}</Text>
+                </View>
+            )}
+        </View>
         <TouchableOpacity
           style={styles.refreshButton}
           onPress={onRefresh}
         >
-          <Text style={styles.refreshIcon}>🔄</Text>
+          <Ionicons name="refresh" size={18} color="#64748B" />
         </TouchableOpacity>
-
-        {pendingAppointments.length > 0 && (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{pendingAppointments.length}</Text>
-          </View>
-        )}
       </View>
 
       {pendingAppointments.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyIcon}>✅</Text>
+          <View style={styles.emptyIconCircle}>
+            <Feather name="check-circle" size={32} color="#10B981" />
+          </View>
           <Text style={styles.emptyText}>All Caught Up!</Text>
           <Text style={styles.emptySubtext}>No pending requests at the moment</Text>
         </View>
@@ -169,7 +176,7 @@ export default function PendingAppointmentsCard({ doctorId }) {
           renderItem={({ item }) => (
             <View style={styles.appointmentItem}>
               <View style={styles.dateSection}>
-                <Text>📅</Text>
+                <MaterialCommunityIcons name="calendar-clock" size={18} color="#D97706" />
                 <View style={styles.dateInfo}>
                   <Text style={styles.dateText}>
                     {formatDate(item.appointment_date)}
@@ -182,7 +189,7 @@ export default function PendingAppointmentsCard({ doctorId }) {
 
               <View style={styles.detailsSection}>
                 <View style={styles.patientInfo}>
-                  <Text>👤</Text>
+                  <Feather name="user" size={14} color="#64748B" />
                   <Text style={styles.patientName}>{item.patient_name}</Text>
                 </View>
 
@@ -196,7 +203,7 @@ export default function PendingAppointmentsCard({ doctorId }) {
 
                 {item.reason && (
                   <View style={styles.reasonBox}>
-                    <Text style={styles.reasonLabel}>Reason:</Text>
+                    <Text style={styles.reasonLabel}>Reason for visit:</Text>
                     <Text style={styles.reasonText}>{item.reason}</Text>
                   </View>
                 )}
@@ -208,7 +215,7 @@ export default function PendingAppointmentsCard({ doctorId }) {
                   onPress={() => handleConfirm(item)}
                   disabled={processing === item.id}
                 >
-                  <Text>✅</Text>
+                  <Feather name="check" size={16} color="#fff" />
                   <Text style={styles.buttonText}>Confirm</Text>
                 </TouchableOpacity>
 
@@ -217,7 +224,7 @@ export default function PendingAppointmentsCard({ doctorId }) {
                   onPress={() => handleReject(item)}
                   disabled={processing === item.id}
                 >
-                  <Text>❌</Text>
+                  <Feather name="x" size={16} color="#fff" />
                   <Text style={styles.buttonText}>Reject</Text>
                 </TouchableOpacity>
               </View>
@@ -232,158 +239,178 @@ export default function PendingAppointmentsCard({ doctorId }) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 15,
-    elevation: 2,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+  },
+  loadingCenter: {
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 16,
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 9, // Refined gap for better icon/text proximity
   },
   title: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1a1a1a',
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#1E293B',
   },
   badge: {
-    backgroundColor: '#ef4444',
-    borderRadius: 12,
-    width: 24,
-    height: 24,
+    backgroundColor: '#EF4444',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
     justifyContent: 'center',
     alignItems: 'center',
   },
   badgeText: {
     color: '#fff',
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   appointmentItem: {
     borderWidth: 1,
-    borderColor: '#fcd34d',
-    backgroundColor: '#fffbeb',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 10,
+    borderColor: '#FDE68A',
+    backgroundColor: '#FFFBEB',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 12,
   },
   dateSection: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
+    alignItems: 'flex-start',
+    marginBottom: 12,
+    gap: 4,
   },
   dateInfo: {
-    marginLeft: 8,
+    marginLeft: 4,
   },
   dateText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '700',
-    color: '#f59e0b',
+    color: '#B45309',
   },
   timeText: {
     fontSize: 12,
-    color: '#92400e',
-    marginTop: 2,
+    color: '#D97706',
+    fontWeight: '600',
   },
   detailsSection: {
-    marginBottom: 10,
+    marginBottom: 14,
   },
   patientInfo: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 4,
+    gap: 6,
   },
   patientName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1a1a1a',
-    marginLeft: 6,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1E293B',
   },
   appointmentType: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: 13,
+    color: '#64748B',
     marginBottom: 4,
+    fontWeight: '500',
   },
   email: {
     fontSize: 12,
-    color: '#007AFF',
-    marginBottom: 6,
+    color: '#3B82F6',
+    marginBottom: 8,
+    textDecorationLine: 'underline',
   },
   reasonBox: {
-    backgroundColor: '#fef3c7',
-    padding: 8,
-    borderRadius: 4,
-    marginTop: 6,
+    backgroundColor: '#FEF3C7',
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 4,
+    borderLeftWidth: 3,
+    borderLeftColor: '#F59E0B',
   },
   reasonLabel: {
     fontSize: 11,
-    fontWeight: '600',
-    color: '#92400e',
+    fontWeight: '700',
+    color: '#92400E',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   reasonText: {
-    fontSize: 12,
-    color: '#78350f',
+    fontSize: 13,
+    color: '#78350F',
     marginTop: 2,
+    lineHeight: 18,
   },
   actionsSection: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 10,
   },
   button: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 8,
-    borderRadius: 6,
+    paddingVertical: 10,
+    borderRadius: 8,
     gap: 6,
   },
   confirmButton: {
-    backgroundColor: '#10b981',
+    backgroundColor: '#10B981',
   },
   rejectButton: {
-    backgroundColor: '#ef4444',
+    backgroundColor: '#EF4444',
   },
   buttonText: {
     color: '#fff',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    paddingVertical: 20,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: '#999',
+    fontSize: 13,
+    fontWeight: '700',
   },
   refreshButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(0, 122, 255, 0.1)',
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: '#F1F5F9',
     justifyContent: 'center',
     alignItems: 'center',
   },
   emptyContainer: {
     alignItems: 'center',
-    paddingVertical: 30,
+    paddingVertical: 40,
   },
-  emptyIcon: {
-    fontSize: 30,
-    marginBottom: 10,
+  emptyIconCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#ECFDF5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
   },
   emptyText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1a1a1a',
-    marginBottom: 4,
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#1E293B',
+    marginBottom: 6,
   },
   emptySubtext: {
-    fontSize: 12,
-    color: '#999',
+    fontSize: 13,
+    color: '#64748B',
     textAlign: 'center',
+    paddingHorizontal: 20,
   },
 });

@@ -23,17 +23,26 @@ export default function AllMedicationsScreen({ route }) {
     fetchMedications();
   }, [fetchMedications]);
 
-  const fetchMedications = useCallback(async () => {
-    try {
-      setLoading(true);
-      const data = await patientService.getPatientPrescriptions(patientId, 'active');
-      setMedications(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error('Failed to load medications:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [patientId]);
+const fetchMedications = useCallback(async () => {
+  try {
+    setLoading(true);
+    const data = await patientService.getPatientPrescriptions(patientId, 'active');
+    
+    const activeMeds = Array.isArray(data) 
+      ? data.filter(med => {
+          const end = new Date(med.end_date);
+          const today = new Date();
+          return end > today;
+        })
+      : [];
+    
+    setMedications(activeMeds);
+  } catch (error) {
+    console.error('Failed to load medications:', error);
+  } finally {
+    setLoading(false);
+  }
+}, [patientId]);
 
   const onRefresh = async () => {
     setRefreshing(true);

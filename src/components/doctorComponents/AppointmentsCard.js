@@ -9,6 +9,8 @@ import {
     RefreshControl,
 } from 'react-native';
 import { appointmentService } from '../../services/appointmentService';
+// Professional icons
+import { MaterialCommunityIcons, Ionicons, FontAwesome5 } from '@expo/vector-icons';
 
 export default function AppointmentsCard({ doctorId }) {
     const [todayAppointments, setTodayAppointments] = useState([]);
@@ -74,7 +76,7 @@ export default function AppointmentsCard({ doctorId }) {
 
     if (loading) {
         return (
-            <View style={styles.card}>
+            <View style={[styles.card, styles.loadingCenter]}>
                 <ActivityIndicator size="large" color="#007AFF" />
             </View>
         );
@@ -83,12 +85,15 @@ export default function AppointmentsCard({ doctorId }) {
     return (
         <View style={styles.card}>
             <View style={styles.header}>
-                <Text style={styles.title}>Today's Appointments</Text>
+                <View style={styles.titleRow}>
+                    <MaterialCommunityIcons name="calendar-clock" size={20} color="#007AFF" />
+                    <Text style={styles.title}>Today's Schedule</Text>
+                </View>
                 <TouchableOpacity
                     style={styles.refreshButton}
                     onPress={onRefresh}
                 >
-                    <Text style={styles.refreshIcon}>🔄</Text>
+                    <Ionicons name="reload" size={18} color="#007AFF" />
                 </TouchableOpacity>
             </View>
 
@@ -100,12 +105,17 @@ export default function AppointmentsCard({ doctorId }) {
                     <Text style={[styles.tabText, activeTab === 'today' && styles.tabTextActive]}>
                         Today
                     </Text>
+                    {todayAppointments.length > 0 && (
+                         <View style={styles.badge}>
+                            <Text style={styles.badgeText}>{todayAppointments.length}</Text>
+                         </View>
+                    )}
                 </TouchableOpacity>
             </View>
 
             {todayAppointments.length === 0 ? (
                 <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyIcon}>📭</Text>
+                    <MaterialCommunityIcons name="clipboard-blank-outline" size={48} color="#CBD5E1" />
                     <Text style={styles.emptyText}>No appointments today</Text>
                 </View>
             ) : (
@@ -115,38 +125,48 @@ export default function AppointmentsCard({ doctorId }) {
                     scrollEnabled={false}
                     renderItem={({ item }) => (
                         <View style={styles.appointmentItem}>
-                            <View style={styles.timeSection}>
-                                <Text style={styles.timeIcon}>🕒</Text>
-                                <Text style={styles.timeText}>
-                                    {formatTime(item.appointment_time)}
-                                </Text>
-                            </View>
-
-                            <View style={styles.detailsSection}>
-                                <View style={styles.patientInfo}>
-                                    <Text style={styles.detailIcon}>👤</Text>
-                                    <Text style={styles.patientName}>{item.patient_name}</Text>
-                                </View>
-                                <Text style={styles.appointmentType}>
-                                    📋 {item.appointment_type}
-                                </Text>
-                                {item.patient_phone && (
-                                    <View style={styles.phoneInfo}>
-                                        <Text style={styles.detailIcon}>📞</Text>
-                                        <Text style={styles.phoneText}>{item.patient_phone}</Text>
-                                    </View>
-                                )}
-                                {item.patient_blood_group && (
-                                    <Text style={styles.bloodGroup}>
-                                        🩸 {item.patient_blood_group}
+                            <View style={styles.leftBar} />
+                            
+                            <View style={styles.mainContent}>
+                                <View style={styles.timeSection}>
+                                    <MaterialCommunityIcons name="clock-outline" size={14} color="#007AFF" />
+                                    <Text style={styles.timeText}>
+                                        {formatTime(item.appointment_time)}
                                     </Text>
-                                )}
+                                </View>
+
+                                <View style={styles.detailsSection}>
+                                    <View style={styles.patientInfo}>
+                                        <Text style={styles.patientName}>{item.patient_name}</Text>
+                                    </View>
+                                    
+                                    <View style={styles.metaRow}>
+                                        <Text style={styles.appointmentType}>
+                                            {item.appointment_type}
+                                        </Text>
+                                        {item.patient_blood_group && (
+                                            <>
+                                                <Text style={styles.dotSeparator}>•</Text>
+                                                <Text style={styles.bloodGroup}>
+                                                    Blood: {item.patient_blood_group}
+                                                </Text>
+                                            </>
+                                        )}
+                                    </View>
+
+                                    {item.patient_phone && (
+                                        <View style={styles.phoneInfo}>
+                                            <Feather name="phone" size={12} color="#64748B" />
+                                            <Text style={styles.phoneText}>{item.patient_phone}</Text>
+                                        </View>
+                                    )}
+                                </View>
                             </View>
 
                             <View
                                 style={[
                                     styles.statusBadge,
-                                    { backgroundColor: getStatusColor(item.status) + '20' }
+                                    { backgroundColor: getStatusColor(item.status) + '15' }
                                 ]}
                             >
                                 <Text
@@ -169,142 +189,173 @@ export default function AppointmentsCard({ doctorId }) {
     );
 }
 
+// Added Feather for the small phone icon
+import { Feather } from '@expo/vector-icons';
+
 const styles = StyleSheet.create({
     card: {
         backgroundColor: '#fff',
-        borderRadius: 8,
-        padding: 15,
-        marginBottom: 15,
-        elevation: 2,
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 16,
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 4 },
+    },
+    loadingCenter: {
+        height: 150,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 12,
+        marginBottom: 16,
+    },
+    titleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
     },
     title: {
-        fontSize: 16,
-        fontWeight: '700',
-        color: '#1a1a1a',
-    },
-    refreshText: {
         fontSize: 18,
+        fontWeight: '800',
+        color: '#1E293B',
     },
     tabContainer: {
         flexDirection: 'row',
-        marginBottom: 12,
+        marginBottom: 16,
         borderBottomWidth: 1,
-        borderBottomColor: '#e5e7eb',
+        borderBottomColor: '#F1F5F9',
     },
     tab: {
-        paddingHorizontal: 15,
         paddingVertical: 10,
-        marginRight: 10,
+        marginRight: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
     },
     tabActive: {
-        borderBottomWidth: 2,
+        borderBottomWidth: 3,
         borderBottomColor: '#007AFF',
     },
     tabText: {
         fontSize: 14,
-        fontWeight: '600',
-        color: '#666',
+        fontWeight: '700',
+        color: '#94A3B8',
     },
     tabTextActive: {
         color: '#007AFF',
     },
+    badge: {
+        backgroundColor: '#E0F2FE',
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 6,
+    },
+    badgeText: {
+        fontSize: 11,
+        fontWeight: '800',
+        color: '#007AFF',
+    },
     appointmentItem: {
-        borderWidth: 1,
-        borderColor: '#e5e7eb',
-        borderRadius: 8,
-        padding: 12,
-        marginBottom: 10,
+        backgroundColor: '#F8FAFC',
+        borderRadius: 12,
+        marginBottom: 12,
         flexDirection: 'row',
-        alignItems: 'flex-start',
+        alignItems: 'center',
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: '#F1F5F9',
+    },
+    leftBar: {
+        width: 4,
+        height: '100%',
+        backgroundColor: '#007AFF',
+    },
+    mainContent: {
+        flex: 1,
+        padding: 12,
     },
     timeSection: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginRight: 12,
+        marginBottom: 4,
     },
     timeText: {
-        fontSize: 14,
-        fontWeight: '700',
-        marginLeft: 6,
+        fontSize: 13,
+        fontWeight: '800',
+        marginLeft: 4,
         color: '#007AFF',
     },
     detailsSection: {
-        flex: 1,
-    },
-    patientInfo: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 4,
+        marginTop: 2,
     },
     patientName: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#1a1a1a',
-        marginLeft: 6,
+        fontSize: 15,
+        fontWeight: '700',
+        color: '#1E293B',
+    },
+    metaRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 2,
     },
     appointmentType: {
         fontSize: 12,
-        color: '#666',
-        marginBottom: 4,
+        color: '#64748B',
+        fontWeight: '600',
+    },
+    dotSeparator: {
+        marginHorizontal: 6,
+        color: '#CBD5E1',
+    },
+    bloodGroup: {
+        fontSize: 12,
+        color: '#EF4444',
+        fontWeight: '700',
     },
     phoneInfo: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 4,
+        marginTop: 6,
+        gap: 4,
     },
     phoneText: {
         fontSize: 12,
-        color: '#666',
-        marginLeft: 4,
-    },
-    bloodGroup: {
-        fontSize: 11,
-        color: '#999',
+        color: '#64748B',
+        fontWeight: '500',
     },
     statusBadge: {
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 4,
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 8,
+        marginRight: 12,
     },
     statusText: {
-        fontSize: 11,
-        fontWeight: '600',
+        fontSize: 10,
+        fontWeight: '800',
+        textTransform: 'uppercase',
     },
     emptyContainer: {
         alignItems: 'center',
-        paddingVertical: 20,
+        paddingVertical: 30,
+        gap: 10,
     },
     emptyText: {
         fontSize: 14,
-        color: '#999',
+        fontWeight: '600',
+        color: '#94A3B8',
     },
     refreshButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: 'rgba(0, 122, 255, 0.1)',
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        backgroundColor: '#F0F7FF',
         justifyContent: 'center',
         alignItems: 'center',
-      },
-      refreshIcon: {
-        fontSize: 18,
-      },
-      emptyIcon: {
-        fontSize: 48,
-        marginBottom: 10,
-      },
-      timeIcon: {
-        fontSize: 16,
-        marginRight: 6,
-      },
-      detailIcon: {
-        fontSize: 14,
-        marginRight: 6,
-      },
+    },
 });

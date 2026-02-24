@@ -25,31 +25,37 @@ axiosInstance.interceptors.request.use(
 
 export const authService = {
   login: async (email, password, role) => {
-
+  try {
     const endpoint = role === 'doctor' 
       ? '/doctors/login'
       : role === 'nurse'
       ? '/nurses/login'
       : '/patients/login';
 
-    try {
-      const response = await axiosInstance.post(endpoint, { email, password });
-      console.log("PATIENT LOGIN RESPONSE:", response.data);      
-      if (response.data.success) {
-        const userData = role === 'doctor' ? response.data.doctor : response.data.patient;
-        
-        await AsyncStorage.setItem('token', response.data.token);
-        await AsyncStorage.setItem('userData', JSON.stringify({ ...userData, role }));
-        
-        return { success: true, data: userData };
-      }
-    } catch (error) {
-      return { 
-        success: false, 
-        error: error.response?.data?.message || 'Login failed' 
+    const response = await axiosInstance.post(endpoint, {
+      email,
+      password,
+    });
+
+    if (response.data.success && response.data.token) {
+      await AsyncStorage.setItem('token', response.data.token);
+      
+      // Store user data WITH role
+      const userData = {
+        ...(response.data.nurse || response.data.doctor || response.data.patient),
+        role: role  // ADD THIS LINE
       };
+      
+      await AsyncStorage.setItem('userData', JSON.stringify(userData));
+      await AsyncStorage.setItem('userType', role);
     }
-  },
+
+    return response.data;
+  } catch (error) {
+    console.log('❌ Login error:', error.response?.data || error.message);
+    throw error.response?.data || { success: false, message: 'Login failed' };
+  }
+},
 
   logout: async () => {
     await AsyncStorage.removeItem('token');

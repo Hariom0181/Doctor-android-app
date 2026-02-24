@@ -8,10 +8,13 @@ import {
   RefreshControl,
   StatusBar,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context'; // Import this
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authService } from '../services/authService';
 import { patientService } from '../services/patientService';
+
+// Professional Icons
+import { MaterialCommunityIcons, Ionicons, Feather } from '@expo/vector-icons';
 
 // Components
 import MyMedications from '../components/patientComponents/myMedication';
@@ -20,7 +23,7 @@ import ProfileCard from '../components/patientComponents/patient_ProfileCard';
 import MyDoctor from '../components/patientComponents/myDoctor';
 
 export default function PatientDashboard({ navigation }) {
-  const insets = useSafeAreaInsets(); // Hook to handle the notch/status bar area
+  const insets = useSafeAreaInsets();
   const [profileImage, setProfileImage] = useState(null);
   const [patient, setPatient] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -69,31 +72,28 @@ export default function PatientDashboard({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* Professional Header: 
-        1. Set to 'light-content' because the background is blue 
-      */}
       <StatusBar barStyle="light-content" backgroundColor="#007AFF" />
       
-      {/* Sticky Header Section:
-        Placed OUTSIDE the ScrollView so it remains fixed.
-        PaddingTop is dynamically set using insets.top.
-      */}
+      {/* Sticky Header Section */}
       <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
         <View style={styles.headerContent}>
-          <Text style={styles.headerTitle}>Welcome back</Text>
+          <View style={styles.greetingRow}>
+             <Feather name="sun" size={14} color="rgba(255,255,255,0.8)" />
+             <Text style={styles.headerTitle}> WELCOME BACK</Text>
+          </View>
           <Text style={styles.patientName}>Pt. {patient?.firstName || 'User'}</Text>
         </View>
         
-        <View style={styles.logoutSection}>
-          <TouchableOpacity 
-            style={styles.logoutIcon} 
-            onPress={handleLogout}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.logoutIconText}>🚪</Text>
-          </TouchableOpacity>
-          <Text style={styles.logoutText}>Logout</Text>
-        </View>
+        <TouchableOpacity 
+          style={styles.logoutButton} 
+          onPress={handleLogout}
+          activeOpacity={0.7}
+        >
+          <View style={styles.logoutIconCircle}>
+            <MaterialCommunityIcons name="logout-variant" size={20} color="#fff" />
+          </View>
+          <Text style={styles.logoutText}>LOGOUT</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Main Content */}
@@ -101,7 +101,7 @@ export default function PatientDashboard({ navigation }) {
         style={styles.scrollView}
         contentContainerStyle={[
             styles.scrollContent, 
-            { paddingBottom: insets.bottom + 20 } // Space for bottom home indicator
+            { paddingBottom: insets.bottom + 20 }
         ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -109,17 +109,23 @@ export default function PatientDashboard({ navigation }) {
             refreshing={refreshing}
             onRefresh={onRefresh}
             colors={['#007AFF']}
-            tintColor="#007AFF" // Added for iOS consistency
+            tintColor="#007AFF"
           />
         }
       >
         {patient && (
-          <>
+          <View style={styles.contentWrapper}>
             <ProfileCard patient={patient} profileImage={profileImage} />
+            
+            <View style={styles.sectionHeader}>
+               <Text style={styles.sectionTitle}>Medical Overview</Text>
+               <View style={styles.divider} />
+            </View>
+
             <MyDoctor />
             <NextCheckup patientId={patient?.id} />
             <MyMedications patientId={patient?.id} navigation={navigation} />
-          </>
+          </View>
         )}
       </ScrollView>
     </View>
@@ -129,66 +135,93 @@ export default function PatientDashboard({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FB', // Slightly cleaner background grey
+    backgroundColor: '#F1F5F9', // Classic Slate 100 for a clean backdrop
   },
   header: {
     backgroundColor: '#007AFF',
     paddingHorizontal: 20,
-    paddingBottom: 20, // Bottom padding to give space below the name
+    paddingBottom: 25,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomLeftRadius: 24, // Subtle curve for modern look
-    borderBottomRightRadius: 24,
-    // Professional Shadow
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    // Professional depth shadow
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
-    zIndex: 10, // Ensures header stays above content
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 10,
+    zIndex: 10,
   },
   headerContent: {
     flex: 1,
   },
+  greetingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 2,
+  },
   headerTitle: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.7)', // Slightly more readable
-    fontWeight: '500',
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.8)',
+    fontWeight: '700',
+    letterSpacing: 1.2,
   },
   patientName: {
-    fontSize: 22, // Increased size
+    fontSize: 26,
     color: '#fff',
-    fontWeight: '800', // Heavy weight for "Pro" feel
-    marginTop: 2,
+    fontWeight: '800',
+    letterSpacing: -0.5,
   },
-  logoutSection: {
+  logoutButton: {
     alignItems: 'center',
-    marginLeft: 15,
+    justifyContent: 'center',
   },
-  logoutIcon: {
-    width: 44, // Slightly larger touch target (Apple standard)
-    height: 44,
-    borderRadius: 12, // Modern squircle look
-    backgroundColor: 'rgba(255,255,255,0.15)',
+  logoutIconCircle: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: 'rgba(255,255,255,0.2)',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  logoutIconText: {
-    fontSize: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
   },
   logoutText: {
     color: '#fff',
-    fontSize: 10,
-    fontWeight: '700',
-    marginTop: 4,
-    textTransform: 'uppercase', // Professional touch
+    fontSize: 9,
+    fontWeight: '800',
+    marginTop: 6,
+    letterSpacing: 1,
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
     paddingHorizontal: 16,
-    paddingTop: 20, // Padding between the curved header and first card
+    paddingTop: 24,
+  },
+  contentWrapper: {
+    gap: 16, // Consistent spacing between cards
+  },
+  sectionHeader: {
+    marginTop: 10,
+    marginBottom: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#64748B',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#CBD5E1',
   },
 });

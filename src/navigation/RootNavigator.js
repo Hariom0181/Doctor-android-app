@@ -8,6 +8,11 @@ import LoginScreen from '../screens/LoginScreen';
 import AllMedicationsScreen from '../screens/AllMedicationsScreen';
 import NurseDashboard from '../screens/NurseDashboard';
 import PatientDashboard from '../screens/PatientDashboard';
+import NursePatientsListScreen from '../screens/NursePatientsListScreen';
+import NurseActivityLogScreen from '../screens/NurseActivityLogScreen';
+import NurseAddNoteScreen from '../screens/NurseAddNoteScreen';
+import NurseLogMedicationScreen from '../screens/NurseLogMedicationScreen';
+import NursePatientDetailScreen from '../screens/NursePatientDetailScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -37,6 +42,10 @@ export default function RootNavigator() {
       setLoading(false);
     }
   };
+  const nurseStackOptions = {
+    headerShown: false,
+  };
+
 
   if (loading) {
     return null; // Show splash screen here later
@@ -58,7 +67,12 @@ export default function RootNavigator() {
         <Stack.Screen name="doctor-dashboard" component={DoctorDashboard} />
         <Stack.Screen name="nurse-dashboard" component={NurseDashboard} />
         <Stack.Screen name="AppointmentsScreen" component={AppointmentsScreen} />
-
+        {/* ADD NURSE SCREENS */}
+        <Stack.Screen name="NursePatientDetail" component={NursePatientDetailScreen} />
+        <Stack.Screen name="NurseLogMedication" component={NurseLogMedicationScreen} />
+        <Stack.Screen name="NurseAddNote" component={NurseAddNoteScreen} />
+        <Stack.Screen name="NursePatientsList" component={NursePatientsListScreen} />
+        <Stack.Screen name="NurseActivityLog" component={NurseActivityLogScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

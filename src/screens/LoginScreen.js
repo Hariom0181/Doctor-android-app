@@ -6,32 +6,27 @@ import { authService } from '../services/authService';
 export default function LoginScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (email, password, role) => {
-    console.log("HANDLE LOGIN CALLED", email, role); 
-    setLoading(true);
-    try {
-      const result = await authService.login(email, password, role);
-      const endpoint = role === 'doctor' 
-    ? '/doctors/login'
-    : role === 'nurse'
-    ? '/nurses/login'
-    : '/patients/login';
-    console.log("ENDPOINT:", endpoint);
+const handleLogin = async (email, password, role) => {
+  console.log("HANDLE LOGIN CALLED", email, role); 
+  setLoading(true);
+  try {
+    const result = await authService.login(email, password, role);
 
-      if (result.success) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: `${role}-dashboard` }],
-        });
-      } else {
-        Alert.alert('Login Failed', result.error);
-      }
-    } catch (error) {
-      Alert.alert('Error', 'Something went wrong');
-    } finally {
-      setLoading(false);
+    if (result.success) {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: `${role}-dashboard` }],
+      });
+    } else {
+      Alert.alert('Login Failed', result.message || result.error);
     }
-  };
+  } catch (error) {
+    console.log('❌ Error:', error);
+    Alert.alert('Error', error.message || 'Something went wrong');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <View style={styles.container}>

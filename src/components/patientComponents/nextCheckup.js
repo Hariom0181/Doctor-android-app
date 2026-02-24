@@ -8,12 +8,13 @@ import {
   View,
 } from 'react-native';
 import { patientService } from '../../services/patientService';
+// Professional Icons
+import { MaterialCommunityIcons, FontAwesome5, Feather } from '@expo/vector-icons';
 
 export default function NextCheckup({ patientId }) {
   const [checkup, setCheckup] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
 
   useEffect(() => {
     if (patientId) {
@@ -33,10 +34,12 @@ export default function NextCheckup({ patientId }) {
       setRefreshing(false);
     }
   };
+
   const onRefresh = () => {
     setRefreshing(true);
     loadCheckup();
   };
+
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -55,11 +58,17 @@ export default function NextCheckup({ patientId }) {
   };
 
   const getUrgencyLabel = (daysRemaining) => {
-    if (daysRemaining < 0) return '⚠️ Overdue';
-    if (daysRemaining === 0) return '🔴 Today';
-    if (daysRemaining === 1) return '🟠 Tomorrow';
-    if (daysRemaining <= 3) return '🟠 This Week';
-    return '✅ Scheduled';
+    if (daysRemaining < 0) return 'OVERDUE';
+    if (daysRemaining === 0) return 'DUE TODAY';
+    if (daysRemaining === 1) return 'DUE TOMORROW';
+    if (daysRemaining <= 3) return 'DUE THIS WEEK';
+    return 'SCHEDULED';
+  };
+
+  const getUrgencyIcon = (daysRemaining) => {
+    if (daysRemaining < 0) return 'alert-circle-outline';
+    if (daysRemaining === 0) return 'clock-alert-outline';
+    return 'calendar-check-outline';
   };
 
   if (loading) {
@@ -74,14 +83,16 @@ export default function NextCheckup({ patientId }) {
     return (
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#007AFF" />
         }
       >
         <View style={styles.container}>
           <View style={styles.emptyCard}>
-            <Text style={styles.emptyIcon}>📅</Text>
+            <View style={styles.emptyIconCircle}>
+                <Feather name="calendar" size={32} color="#94A3B8" />
+            </View>
             <Text style={styles.emptyText}>No Checkup Scheduled</Text>
-            <Text style={styles.emptySubtext}>Contact your doctor to book an appointment</Text>
+            <Text style={styles.emptySubtext}>Contact your doctor to book your next health assessment</Text>
           </View>
         </View>
       </ScrollView>
@@ -94,47 +105,37 @@ export default function NextCheckup({ patientId }) {
   return (
     <ScrollView
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#007AFF" />
       }
     >
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>📋 Next Checkup</Text>
+          <MaterialCommunityIcons name="clipboard-pulse-outline" size={20} color="#64748B" />
+          <Text style={styles.title}>Next Checkup</Text>
         </View>
 
         <View style={[styles.mainCard, { borderLeftColor: urgencyColor }]}>
           {/* Status Badge */}
-          <View style={[styles.statusBadge, { backgroundColor: urgencyColor }]}>
-            <Text style={styles.statusText}>{getUrgencyLabel(daysRemaining)}</Text>
+          <View style={[styles.statusBadge, { backgroundColor: urgencyColor + '15' }]}>
+            <MaterialCommunityIcons name={getUrgencyIcon(daysRemaining)} size={14} color={urgencyColor} />
+            <Text style={[styles.statusText, { color: urgencyColor }]}>{getUrgencyLabel(daysRemaining)}</Text>
           </View>
 
-          {/* Date Section */}
-          <View style={styles.dateSection}>
-            <Text style={styles.dateLabel}>📅 Date</Text>
-            <Text style={styles.dateValue}>{formatDate(checkup.date)}</Text>
-          </View>
+          <View style={styles.cardContent}>
+            {/* Date Section */}
+            <View style={styles.dateSection}>
+                <Text style={styles.dateLabel}>APPOINTMENT DATE</Text>
+                <Text style={styles.dateValue}>{formatDate(checkup.date)}</Text>
+            </View>
 
-          {/* Days Remaining */}
-          <View style={styles.daysSection}>
+            {/* Days Remaining Box */}
             <View style={[styles.daysBox, { backgroundColor: urgencyColor }]}>
               <Text style={styles.daysNumber}>{Math.abs(daysRemaining)}</Text>
               <Text style={styles.daysLabel}>
-                {daysRemaining < 0 ? 'Days Overdue' : 'Days Left'}
+                {daysRemaining < 0 ? 'DAYS OVERDUE' : 'DAYS TO GO'}
               </Text>
             </View>
           </View>
-
-          {/* Divider */}
-          {/* <View style={styles.divider} /> */}
-
-          {/* Doctor Info - Simple */}
-          {/* <View style={styles.doctorSimpleSection}>
-            <Text style={styles.doctorLabel}>👨‍⚕️ Doctor</Text>
-            <Text style={styles.doctorNameOnly}>{checkup.doctorName}</Text>
-            {checkup.specialization && (
-              <Text style={styles.doctorSpec}>{checkup.specialization}</Text>
-            )}
-          </View> */}
         </View>
       </View>
     </ScrollView>
@@ -143,119 +144,125 @@ export default function NextCheckup({ patientId }) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 16,
     marginBottom: 20,
   },
   loadingContainer: {
-    height: 200,
+    height: 180,
     justifyContent: 'center',
     alignItems: 'center',
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 12,
+    gap: 8,
   },
   title: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1a1a1a',
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#64748B',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   mainCard: {
     backgroundColor: '#fff',
-    borderRadius: 14,
-    padding: 16,
+    borderRadius: 16,
+    padding: 20,
     elevation: 4,
-    borderLeftWidth: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    borderLeftWidth: 6,
   },
   statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
     alignSelf: 'flex-start',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    marginBottom: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginBottom: 16,
+    gap: 6,
   },
   statusText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  cardContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   dateSection: {
-    marginBottom: 14,
+    flex: 1,
+    marginRight: 10,
   },
   dateLabel: {
-    fontSize: 12,
-    color: '#666',
-    fontWeight: '600',
-    marginBottom: 6,
+    fontSize: 10,
+    color: '#94A3B8',
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    marginBottom: 4,
   },
   dateValue: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '700',
-    color: '#1a1a1a',
-  },
-  daysSection: {
-    marginBottom: 14,
+    color: '#1E293B',
+    lineHeight: 22,
   },
   daysBox: {
-    borderRadius: 10,
-    padding: 14,
+    borderRadius: 12,
+    width: 85,
+    height: 85,
     alignItems: 'center',
     justifyContent: 'center',
+    elevation: 2,
   },
   daysNumber: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: '800',
     color: '#fff',
   },
   daysLabel: {
-    fontSize: 12,
+    fontSize: 8,
     color: '#fff',
-    fontWeight: '600',
-    marginTop: 4,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#e5e7eb',
-    marginVertical: 14,
-  },
-  doctorSimpleSection: {
-    marginTop: 8,
-  },
-  doctorLabel: {
-    fontSize: 12,
-    color: '#666',
-    fontWeight: '600',
-    marginBottom: 6,
-  },
-  doctorNameOnly: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#007AFF',
-    marginBottom: 4,
-  },
-  doctorSpec: {
-    fontSize: 12,
-    color: '#999',
+    fontWeight: '800',
+    textAlign: 'center',
+    marginTop: 2,
+    paddingHorizontal: 4,
   },
   emptyCard: {
     backgroundColor: '#fff',
-    borderRadius: 14,
-    padding: 24,
+    borderRadius: 16,
+    padding: 30,
     alignItems: 'center',
-    elevation: 3,
+    elevation: 2,
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
   },
-  emptyIcon: {
-    fontSize: 48,
-    marginBottom: 12,
+  emptyIconCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#F8FAFC',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
   },
   emptyText: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1a1a1a',
-    marginBottom: 6,
+    color: '#1E293B',
+    marginBottom: 8,
   },
   emptySubtext: {
     fontSize: 13,
-    color: '#999',
+    color: '#64748B',
     textAlign: 'center',
+    lineHeight: 18,
   },
 });

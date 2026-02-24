@@ -11,7 +11,10 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context'; // Ensure this is installed
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+// Added professional icon imports
+import { MaterialCommunityIcons, FontAwesome5, Ionicons } from '@expo/vector-icons';
+
 import ActivePatientsCard from '../components/doctorComponents/ActivePatientsCard';
 import AppointmentsCard from '../components/doctorComponents/AppointmentsCard';
 import PendingAppointmentsCard from '../components/doctorComponents/PendingAppointmentsCard';
@@ -20,14 +23,13 @@ import { authService } from '../services/authService';
 import { patientService } from '../services/patientService';
 
 export default function DoctorDashboard({ navigation }) {
-  const insets = useSafeAreaInsets(); // Logic for notched phones
+  const insets = useSafeAreaInsets();
   const [doctor, setDoctor] = useState(null);
   const [viewingPatient, setViewingPatient] = useState(null);
   const [patientProfileImage, setPatientProfileImage] = useState(null);
   const [loadingPatientImage, setLoadingPatientImage] = useState(false);
   const [showPatientModal, setShowPatientModal] = useState(false);
 
-  // ... [KEEP ALL YOUR EXISTING USEEFFECTS AND FUNCTIONS EXACTLY AS THEY ARE] ...
   useEffect(() => {
     loadDoctorData();
   }, []);
@@ -99,7 +101,6 @@ export default function DoctorDashboard({ navigation }) {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#007AFF" />
 
-      {/* REFACTORED PROFESSIONAL HEADER (STAYS FIXED) */}
       <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
         <View style={styles.headerContent}>
           <Text style={styles.headerTitle}>Welcome back</Text>
@@ -111,7 +112,8 @@ export default function DoctorDashboard({ navigation }) {
             onPress={handleLogout}
             activeOpacity={0.7}
           >
-            <Text style={styles.logoutIconText}>🚪</Text>
+            {/* Replaced emoji with professional Logout icon */}
+            <MaterialCommunityIcons name="logout" size={24} color="#fff" />
           </TouchableOpacity>
           <Text style={styles.logoutText}>Logout</Text>
         </View>
@@ -135,20 +137,19 @@ export default function DoctorDashboard({ navigation }) {
           activeOpacity={0.8}
         >
           <View style={styles.buttonContent}>
-            <Text style={styles.buttonIcon}>📅</Text>
+            {/* Replaced emoji with professional Calendar icon */}
+            <MaterialCommunityIcons name="calendar-clock" size={28} color="#007AFF" />
             <View style={styles.buttonTextContainer}>
               <Text style={styles.buttonMainText}>View All Appointments</Text>
               <Text style={styles.buttonSubText}>Manage complete schedule</Text>
             </View>
-            <Text style={styles.buttonArrow}>→</Text>
+            <MaterialCommunityIcons name="chevron-right" size={24} color="#007AFF" />
           </View>
         </TouchableOpacity>
       </ScrollView>
 
-      {/* ... [KEEP YOUR MODAL CODE EXACTLY AS IT IS] ... */}
       {showPatientModal && viewingPatient && (
         <Modal visible animationType="slide">
-            {/* Your existing Modal content */}
             <View style={styles.modalContainer}>
                 <View style={styles.modalHeader}>
                     <TouchableOpacity
@@ -159,10 +160,11 @@ export default function DoctorDashboard({ navigation }) {
                             setPatientProfileImage(null);
                         }}
                     >
-                        <Text style={styles.modalCloseText}>← Back</Text>
+                        {/* Replaced text back button with Icon */}
+                        <Ionicons name="arrow-back" size={24} color="#fff" />
                     </TouchableOpacity>
                     <Text style={styles.modalTitle}>Patient Details</Text>
-                    <View style={{ width: 60 }} />
+                    <View style={{ width: 44 }} />
                 </View>
 
                 <ScrollView
@@ -176,11 +178,15 @@ export default function DoctorDashboard({ navigation }) {
                         </View>
                     ) : (
                         <>
-                            {patientProfileImage && (
+                            {patientProfileImage ? (
                                 <Image
                                     source={{ uri: patientProfileImage }}
                                     style={styles.patientModalImage}
                                 />
+                            ) : (
+                                <View style={[styles.patientModalImage, {backgroundColor: '#E2E8F0', justifyContent: 'center', alignItems: 'center'}]}>
+                                     <FontAwesome5 name="user" size={40} color="#94A3B8" />
+                                </View>
                             )}
                             <View style={styles.patientInfoCard}>
                                 <Text style={styles.patientNameModal}>
@@ -197,18 +203,18 @@ export default function DoctorDashboard({ navigation }) {
                                     <View style={styles.infoBox}>
                                         <Text style={styles.infoLabel}>Blood Group</Text>
                                         <Text style={styles.infoValue}>
-                                            {viewingPatient?.bloodGroup}
+                                            {viewingPatient?.bloodGroup || 'N/A'}
                                         </Text>
                                     </View>
                                 </View>
                                 <View style={styles.contactSection}>
                                     <Text style={styles.sectionTitle}>Contact Information</Text>
                                     <View style={styles.contactItem}>
-                                        <Text style={styles.contactIcon}>📧</Text>
+                                        <MaterialCommunityIcons name="email-outline" size={18} color="#007AFF" style={{marginRight: 10}} />
                                         <Text style={styles.contactText}>{viewingPatient?.email}</Text>
                                     </View>
                                     <View style={styles.contactItem}>
-                                        <Text style={styles.contactIcon}>📞</Text>
+                                        <MaterialCommunityIcons name="phone-outline" size={18} color="#007AFF" style={{marginRight: 10}} />
                                         <Text style={styles.contactText}>{viewingPatient?.phone}</Text>
                                     </View>
                                 </View>
@@ -226,58 +232,55 @@ export default function DoctorDashboard({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-    // Removed paddingTop: 30 because insets handle it now
+    backgroundColor: '#F8F9FB',
   },
   header: {
     backgroundColor: '#007AFF',
     paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingBottom: 25,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    // Professional styling
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-    elevation: 8,
-    shadowColor: '#000',
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    elevation: 10,
+    shadowColor: '#007AFF',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    zIndex: 10, // Keeps it above the scrollable content
+    shadowOpacity: 0.2,
+    shadowRadius: 15,
+    zIndex: 10,
   },
   headerContent: {
     flex: 1,
   },
   headerTitle: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.7)',
-    fontWeight: '500',
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.8)',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   doctorName: {
-    fontSize: 24,
+    fontSize: 26,
     color: '#fff',
-    fontWeight: '800',
+    fontWeight: '900',
     marginTop: 2,
   },
   logoutSection: {
     alignItems: 'center',
   },
   logoutIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    width: 46,
+    height: 46,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.15)',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  logoutIconText: {
-    fontSize: 22,
   },
   logoutText: {
     color: '#fff',
     fontSize: 10,
-    fontWeight: '700',
+    fontWeight: '800',
     marginTop: 4,
     textTransform: 'uppercase',
   },
@@ -285,44 +288,80 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 15,
-    paddingTop: 20, // Space between header and first card
+    paddingHorizontal: 16,
+    paddingTop: 24,
   },
-  // ... [KEEP ALL OTHER EXISTING STYLES] ...
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   viewAllAppointmentsButton: {
     backgroundColor: '#fff',
-    borderWidth: 2,
-    borderColor: '#007AFF',
-    borderRadius: 10,
-    overflow: 'hidden',
-    elevation: 3,
-    marginBottom: 15,
+    borderRadius: 18,
+    marginTop: 10,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
   },
-  buttonContent: { flexDirection: 'row', alignItems: 'center', padding: 15, gap: 12 },
-  buttonIcon: { fontSize: 28 },
+  buttonContent: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    padding: 20, 
+    gap: 15 
+  },
   buttonTextContainer: { flex: 1 },
-  buttonMainText: { fontSize: 15, fontWeight: '700', color: '#1a1a1a' },
-  buttonSubText: { fontSize: 12, color: '#666', marginTop: 2 },
-  buttonArrow: { fontSize: 18, color: '#007AFF', fontWeight: '700' },
-  modalContainer: { flex: 1, backgroundColor: '#f5f5f5', paddingTop: 30 },
-  modalHeader: { backgroundColor: '#007AFF', paddingHorizontal: 15, paddingVertical: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', elevation: 3 },
-  modalCloseButton: { paddingVertical: 8, paddingHorizontal: 10 },
-  modalCloseText: { color: '#fff', fontSize: 16, fontWeight: '600' },
-  modalTitle: { color: '#fff', fontSize: 18, fontWeight: '700', flex: 1, textAlign: 'center' },
+  buttonMainText: { fontSize: 16, fontWeight: '800', color: '#1E293B' },
+  buttonSubText: { fontSize: 13, color: '#64748B', marginTop: 2 },
+  modalContainer: { flex: 1, backgroundColor: '#F8F9FB' },
+  modalHeader: { 
+    backgroundColor: '#007AFF', 
+    paddingHorizontal: 15, 
+    height: 60,
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'space-between', 
+    elevation: 4 
+  },
+  modalCloseButton: { 
+    width: 44,
+    height: 44,
+    justifyContent: 'center', 
+    alignItems: 'center' 
+  },
+  modalTitle: { color: '#fff', fontSize: 18, fontWeight: '800', flex: 1, textAlign: 'center' },
   modalScrollView: { flex: 1 },
-  modalScrollContent: { paddingHorizontal: 15, paddingVertical: 15, paddingBottom: 20 },
-  patientModalImage: { width: 120, height: 120, borderRadius: 60, alignSelf: 'center', marginBottom: 20, borderWidth: 3, borderColor: '#007AFF' },
-  patientInfoCard: { backgroundColor: '#fff', borderRadius: 12, padding: 15, elevation: 2 },
-  patientNameModal: { fontSize: 20, fontWeight: '700', color: '#1a1a1a', textAlign: 'center' },
-  patientId: { fontSize: 12, color: '#666', textAlign: 'center', marginTop: 4, marginBottom: 15 },
-  infoGrid: { flexDirection: 'row', gap: 10, marginBottom: 20, paddingBottom: 15, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' },
-  infoBox: { flex: 1, backgroundColor: '#f9fafb', padding: 12, borderRadius: 8, alignItems: 'center' },
-  infoLabel: { fontSize: 11, color: '#666', fontWeight: '600' },
-  infoValue: { fontSize: 14, color: '#1a1a1a', fontWeight: '700', marginTop: 4 },
-  contactSection: { marginBottom: 20 },
-  sectionTitle: { fontSize: 13, fontWeight: '700', color: '#1a1a1a', marginBottom: 10 },
-  contactItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8 },
-  contactIcon: { fontSize: 16, marginRight: 10 },
-  contactText: { fontSize: 13, color: '#333' },
+  modalScrollContent: { paddingHorizontal: 20, paddingVertical: 25 },
+  patientModalImage: { 
+    width: 130, 
+    height: 130, 
+    borderRadius: 65, 
+    alignSelf: 'center', 
+    marginBottom: 25, 
+    borderWidth: 4, 
+    borderColor: '#fff',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+  },
+  patientInfoCard: { 
+    backgroundColor: '#fff', 
+    borderRadius: 24, 
+    padding: 24, 
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 15,
+  },
+  patientNameModal: { fontSize: 24, fontWeight: '900', color: '#0F172A', textAlign: 'center' },
+  patientId: { fontSize: 13, color: '#64748B', textAlign: 'center', marginTop: 4, marginBottom: 25, fontWeight: '600' },
+  infoGrid: { flexDirection: 'row', gap: 12, marginBottom: 25 },
+  infoBox: { flex: 1, backgroundColor: '#F1F5F9', padding: 16, borderRadius: 16, alignItems: 'center' },
+  infoLabel: { fontSize: 12, color: '#64748B', fontWeight: '800', textTransform: 'uppercase' },
+  infoValue: { fontSize: 16, color: '#0F172A', fontWeight: '700', marginTop: 4 },
+  contactSection: { marginTop: 10 },
+  sectionTitle: { fontSize: 15, fontWeight: '800', color: '#0F172A', marginBottom: 15 },
+  contactItem: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
+  contactText: { fontSize: 15, color: '#334155', fontWeight: '500' },
 });
